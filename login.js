@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
 
         const username = document.getElementById('username').value.trim();
-        const password = document.getElementById('password').value; // Password tidak di-trim
+        const password = document.getElementById('password').value;
 
         if (!username || !password) {
             showMessage('Username and password cannot be empty.', 'error');
@@ -22,7 +22,6 @@ document.addEventListener('DOMContentLoaded', () => {
         setLoading(true, 'Authenticating, please wait...');
 
         try {
-            // Step 1: Ambil data user berdasarkan username
             const response = await fetch(`https://dummyjson.com/users/filter?key=username&value=${username}`);
             
             if (!response.ok) {
@@ -35,10 +34,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (data.users && data.users.length > 0) {
                 const user = data.users[0];
                 
-                // Step 3: Bandingkan password yang diinput dengan password dari API
-                // <--- INI BAGIAN PENTINGNYA
                 if (user.password === password) {
-                    // Password cocok, login berhasil!
+                    // Password cocok, login berhasil
                     showMessage('Login successful! Redirecting...', 'success');
                     localStorage.setItem('firstName', user.firstName);
 

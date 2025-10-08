@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const track = document.querySelector('.autoscroll-track');
 
     async function fetchAndDisplayFeaturedRecipes() {
-        if (!track) return; // Guard clause
+        if (!track) return; 
 
         try {
             const response = await fetch('https://dummyjson.com/recipes?limit=5&select=name,image,id');
