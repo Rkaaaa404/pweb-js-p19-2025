@@ -97,7 +97,7 @@
           </div>
           <div class="ingredients"><strong>Ingredients:</strong> ${ingredients || '-'}</div>
           <div class="actions">
-            <button class="btn btn-outline" data-id="${r.id}" disabled title="Handled by another team later">View Full Recipe</button>
+            <button class="btn btn-outline view-btn" data-id="${r.id}" title="View Full Recipe">View Full Recipe</button>
           </div>
         </div>
       </article>`
@@ -117,6 +117,13 @@
     // Counter & ShowMore state
     counter.textContent = `${filtered.length} recipe${filtered.length!==1?'s':''} found`;
     showMoreBtn.style.display = visibleCount < filtered.length ? 'inline-flex' : 'none';
+    const buttons = grid.querySelectorAll('.view-btn');
+      buttons.forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const id = btn.dataset.id;
+          await showRecipeDetail(id);  // fungsi ini dari tambahan modal sebelumnya
+        });
+      });
   }
 
   function applyFilters() {
@@ -166,4 +173,91 @@
     }
   })();
 
+  const modal = document.createElement('div');
+  modal.id = 'recipe-modal';
+  modal.innerHTML = `
+    <div class="modal-overlay"></div>
+    <div class="modal-card">
+      <button class="modal-close">&times;</button>
+      <div class="modal-content">
+        <p>Loading recipe...</p>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+
+  const modalOverlay = modal.querySelector('.modal-overlay');
+  const modalCard = modal.querySelector('.modal-card');
+  const modalContent = modal.querySelector('.modal-content');
+  const modalClose = modal.querySelector('.modal-close');
+
+  function showModal() {
+    modal.classList.add('show');
+  }
+  function hideModal() {
+    modal.classList.remove('show');
+  }
+  modalOverlay.addEventListener('click', hideModal);
+  modalClose.addEventListener('click', hideModal);
+
+  // ====== View Button Logic ======
+  async function showRecipeDetail(id) {
+  try {
+    modalContent.innerHTML = '<p>Loading recipe...</p>';
+    showModal();
+
+    const res = await fetch(`https://dummyjson.com/recipes/${id}`);
+    if (!res.ok) throw new Error('Recipe not found');
+    const r = await res.json();
+
+    const img = r.image || r.images?.[0] || 'https://placehold.co/600x400?text=Recipe';
+    const tagsHTML = (r.tags || []).map(t => `<span class="tag">${t}</span>`).join('') || '<span class="tag">No tags</span>';
+
+    modalContent.innerHTML = `
+      <div class="detail-header">
+        <img src="${img}" alt="${r.name}" class="detail-image">
+        <div class="detail-info">
+          <h2>${r.name}</h2>
+          <div class="info-grid">
+            <div><strong>Prep Time</strong><span>${r.prepTimeMinutes} mins</span></div>
+            <div><strong>Cook Time</strong><span>${r.cookTimeMinutes} mins</span></div>
+            <div><strong>Servings</strong><span>${r.servings}</span></div>
+            <div><strong>Difficulty</strong><span>${r.difficulty}</span></div>
+            <div><strong>Cuisine</strong><span>${r.cuisine}</span></div>
+            <div><strong>Calories</strong><span>${r.caloriesPerServing || '-'} cal/serving</span></div>
+          </div>
+          <div class="rating-box">
+            ${starHTML(r.rating || 0)}
+            <span class="reviews">${(r.reviewCount || 2)} reviews</span>
+          </div>
+          <div class="tag-list">${tagsHTML}</div>
+        </div>
+      </div>
+
+      <div class="detail-body">
+        <h3>Ingredients</h3>
+        <ul class="ingredients-list">
+          ${r.ingredients.map(i => `<li>${i}</li>`).join('')}
+        </ul>
+
+        <h3>Instructions</h3>
+        <ol class="instructions-list">
+          ${r.instructions.map(s => `<li>${s}</li>`).join('')}
+        </ol>
+      </div>
+    `;
+  } catch (err) {
+    modalContent.innerHTML = `<p>Error loading recipe: ${err.message}</p>`;
+  }
+}
+
+  // Tambahkan listener setelah setiap render
+  const oldRender = render;
+  render = function(reset = false) {
+    oldRender(reset);
+    grid.querySelectorAll('.view-btn').forEach(btn => {
+      btn.addEventListener('click', () => showRecipeDetail(btn.dataset.id));
+    });
+  };
 })();
+
