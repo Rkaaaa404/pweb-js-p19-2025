@@ -3,15 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MASAK'O</title>
+    <title>MASAK'O — Recipes</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
@@ -19,29 +15,40 @@
       <div class="nav-container">
         <span class="logo">MASAK'O!</span>
         <nav class="main-nav">
-          <a href="index.html">home</a>
-          <a href="recipes.html">recipes</a>
-          <a href="login.html" class="btn-login">login</a>
+          <a href="index.html">Home</a>
+          <a href="recipes.html" aria-current="page">Recipes</a>
+          <span id="nav-user-slot" class="nav-user"></span>
+          <button id="btn-logout" class="btn-logout" title="Logout">Logout</button>
         </nav>
       </div>
     </header>
 
-    <main>
-      <section class="hero-section">
-        <div class="container">
-          <h1>Cari Resep Masakan dengan Mudah</h1>
-          <p>
-            Temukan berbagai resep makanan dengan cara memasak yang lengkap dan
-            praktis. Semua tinggal <i>Masak'o!</i>
-          </p>
+    <main class="container">
+      <section class="controls">
+        <div class="control-row">
+          <input id="search-input" type="text" placeholder="Search recipes, cuisines, ingredients, or tags..." aria-label="Search recipes" />
+          <select id="cuisine-select" aria-label="Filter by cuisine">
+            <option value="">Loading...</option>
+          </select>
+        </div>
+        <div class="result-row">
+          <span id="result-counter">0 recipes found</span>
         </div>
       </section>
+
+      <section id="recipes-grid" class="recipes-grid" aria-live="polite"></section>
+
+      <div class="show-more-wrap">
+        <button id="btn-show-more" class="btn btn-primary" style="display:none">Show More</button>
+      </div>
     </main>
+
     <footer class="main-footer">
       <div class="container">
-        <p>&copy; 2025 MASAK'O! &mdash; All Rights Reserved.</p>
+        <p>&copy; 2025 MASAK'O! — All Rights Reserved.</p>
       </div>
     </footer>
-    <script src="home.js"></script>
+
+    <script src="recipes.js"></script>
   </body>
 </html>
